@@ -12,7 +12,7 @@ func (m *model) View() string {
 			m.sectionLines(m.header),
 			m.sectionLines(m.body),
 			m.sectionLines(m.footer),
-		), "\n") + "\n"
+		), "\n")
 	}
 
 	focused, _ := m.focused()
@@ -35,7 +35,7 @@ func (m *model) View() string {
 	}
 
 	lines = append(lines, footer...)
-	return strings.Join(lines, "\n") + "\n"
+	return strings.Join(lines, "\n")
 }
 
 func (m *model) sectionLines(items []item) []string {
@@ -126,9 +126,17 @@ func flattenItems(items []item, focused *submodelEntry) ([]string, int, int) {
 
 func itemLines(item item) []string {
 	if item.entry != nil {
-		return strings.Split(item.entry.submodel.View(), "\n")
+		return splitViewLines(item.entry.submodel.View())
 	}
-	return strings.Split(item.text, "\n")
+	return splitViewLines(item.text)
+}
+
+func splitViewLines(s string) []string {
+	lines := strings.Split(s, "\n")
+	if len(lines) > 1 && lines[len(lines)-1] == "" {
+		return lines[:len(lines)-1]
+	}
+	return lines
 }
 
 func omissionLine(count, width int) string {
