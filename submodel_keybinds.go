@@ -148,7 +148,7 @@ func renderKeybind(binding Keybind) string {
 		return description
 	}
 
-	return fmt.Sprintf("%s %s", inverseStyle.Render(" "+binding.Key+" "), description)
+	return fmt.Sprintf("%s %s", InverseStyle.Render(" "+binding.Key+" "), description)
 }
 
 var _ Submodel = (*Keybinds)(nil)

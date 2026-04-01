@@ -11,8 +11,8 @@ import (
 func NewInput() *Input {
 	in := textinput.New()
 	in.Prompt = ": "
-	in.PlaceholderStyle = mutedStyle
-	in.Cursor.Style = inverseStyle
+	in.PlaceholderStyle = MutedStyle
+	in.Cursor.Style = InverseStyle
 
 	return &Input{
 		input: in,
@@ -99,7 +99,7 @@ func (m *Input) Update(msg tea.Msg) (Submodel, tea.Cmd, string) {
 
 func (m *Input) View() string {
 	if m.input.Err != nil {
-		return fmt.Sprintf("%s %s", m.input.View(), errorStyle.Render(m.input.Err.Error()))
+		return fmt.Sprintf("%s %s", m.input.View(), ErrorStyle.Render(m.input.Err.Error()))
 	}
 	return m.input.View()
 }

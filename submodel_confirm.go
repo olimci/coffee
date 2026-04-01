@@ -73,9 +73,9 @@ func (m *Confirm) View() string {
 
 func (m *Confirm) final() string {
 	if m.confirm {
-		return fmt.Sprintf("%s %s", m.prompt, successStyle.Render("YES"))
+		return fmt.Sprintf("%s %s", m.prompt, SuccessStyle.Render("YES"))
 	}
-	return fmt.Sprintf("%s %s", m.prompt, errorStyle.Render("NO"))
+	return fmt.Sprintf("%s %s", m.prompt, ErrorStyle.Render("NO"))
 }
 
 var _ Submodel = (*Confirm)(nil)

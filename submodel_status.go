@@ -173,9 +173,9 @@ func (m *Status) View() string {
 	case statusProgress:
 		return renderProgressLine(m.width, m.message, m.progress)
 	case statusSuccess:
-		return successStyle.Render(m.message)
+		return SuccessStyle.Render(m.message)
 	case statusError:
-		return errorStyle.Render(m.message)
+		return ErrorStyle.Render(m.message)
 	default:
 		return m.message
 	}
