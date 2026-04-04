@@ -43,7 +43,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case msgLog:
-		m.appendText(msg.section, msg.message)
+		m.appendText(msg.section, msg.message, msg.opts)
 		return m, nil
 
 	case msgClear:
@@ -81,10 +81,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *model) appendText(section Section, text string) {
+func (m *model) appendText(section Section, text string, opts logOptions) {
 	items := m.section(section)
 	*items = append(*items, item{
 		text: text,
+		opts: opts,
 	})
 }
 

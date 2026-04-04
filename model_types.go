@@ -3,6 +3,7 @@ package coffee
 type item struct {
 	entry *submodelEntry
 	text  string
+	opts  logOptions
 }
 
 type submodelEntry struct {

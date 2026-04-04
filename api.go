@@ -32,10 +32,11 @@ func WithFocusBehind() SubmodelOption {
 	}
 }
 
-func (c *Coffee) Log(message string) error {
+func (c *Coffee) Log(message string, opts ...LogOption) error {
 	return c.send(msgLog{
 		message: message,
 		section: SectionBody,
+		opts:    applyLogOptions(opts...),
 	})
 }
 
@@ -43,10 +44,11 @@ func (c *Coffee) Logf(format string, args ...any) error {
 	return c.Log(fmt.Sprintf(format, args...))
 }
 
-func (c *Coffee) LogHeader(message string) error {
+func (c *Coffee) LogHeader(message string, opts ...LogOption) error {
 	return c.send(msgLog{
 		message: message,
 		section: SectionHeader,
+		opts:    applyLogOptions(opts...),
 	})
 }
 
@@ -54,10 +56,11 @@ func (c *Coffee) LogHeaderf(format string, args ...any) error {
 	return c.LogHeader(fmt.Sprintf(format, args...))
 }
 
-func (c *Coffee) LogFooter(message string) error {
+func (c *Coffee) LogFooter(message string, opts ...LogOption) error {
 	return c.send(msgLog{
 		message: message,
 		section: SectionFooter,
+		opts:    applyLogOptions(opts...),
 	})
 }
 

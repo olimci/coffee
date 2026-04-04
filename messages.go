@@ -4,6 +4,7 @@ package coffee
 type msgLog struct {
 	message string
 	section Section
+	opts    logOptions
 }
 
 // clear logs from a section, preserving submodels.
