@@ -43,7 +43,7 @@ func (m *model) View() string {
 func (m *model) sectionLines(items []item, width int) []string {
 	lines := make([]string, 0, len(items))
 	for _, item := range items {
-		lines = append(lines, itemLines(item, width)...)
+		lines = append(lines, renderedBlockLines(renderItem(item, true, width))...)
 	}
 	return lines
 }
@@ -109,11 +109,12 @@ func flattenItems(items []item, focused *submodelEntry, width int) ([]string, in
 	focusStart, focusEnd := -1, -1
 
 	for _, item := range items {
-		itemLines := itemLines(item, width)
+		block := renderItem(item, true, width)
+		itemLines := renderedBlockLines(block)
 		start := len(lines)
 		lines = append(lines, itemLines...)
 
-		if item.entry != nil && item.entry == focused {
+		if block.entry != nil && block.entry == focused {
 			focusStart = start
 			focusEnd = len(lines)
 		}
@@ -122,11 +123,26 @@ func flattenItems(items []item, focused *submodelEntry, width int) ([]string, in
 	return lines, focusStart, focusEnd
 }
 
-func itemLines(item item, width int) []string {
+type renderedBlock struct {
+	text  string
+	entry *submodelEntry
+}
+
+func renderItem(item item, wrap bool, width int) renderedBlock {
 	if item.entry != nil {
-		return splitViewLines(item.entry.submodel.View())
+		return renderedBlock{
+			text:  item.entry.submodel.View(),
+			entry: item.entry,
+		}
 	}
-	return splitViewLines(renderTextItem(item, true, width))
+
+	return renderedBlock{
+		text: renderTextItem(item, wrap, width),
+	}
+}
+
+func renderedBlockLines(block renderedBlock) []string {
+	return splitViewLines(block.text)
 }
 
 func splitViewLines(s string) []string {

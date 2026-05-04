@@ -63,7 +63,7 @@ type msgStatusClear struct {
 
 func NewStatus(message string) *Status {
 	spin := spinner.New()
-	spin.Spinner = spinner.Pulse
+	spin.Spinner = spinner.MiniDot
 
 	return &Status{
 		state:   statusWorking,
@@ -164,18 +164,15 @@ func (m *Status) Update(msg tea.Msg) (Submodel, tea.Cmd, string) {
 func (m *Status) View() string {
 	switch m.state {
 	case statusIdle:
-		return m.message
+		return renderStatusLine("waiting", MutedStyle, m.message)
 	case statusWorking:
-		if m.message == "" {
-			return m.spinner.View()
-		}
-		return fmt.Sprintf("%s %s", m.spinner.View(), m.message)
+		return renderStatusLine(m.spinner.View(), AccentStyle, m.message)
 	case statusProgress:
 		return renderProgressLine(m.width, m.message, m.progress)
 	case statusSuccess:
-		return SuccessStyle.Render(m.message)
+		return renderStatusLine("done", SuccessStyle, m.message)
 	case statusError:
-		return ErrorStyle.Render(m.message)
+		return renderStatusLine("failed", ErrorStyle, m.message)
 	default:
 		return m.message
 	}
@@ -191,7 +188,7 @@ func (m *Status) final() string {
 }
 
 func renderProgressLine(width int, message string, percent float64) string {
-	percentLabel := fmt.Sprintf("%3.0f%%", percent*100)
+	percentLabel := AccentStyle.Render(fmt.Sprintf("%3.0f%%", percent*100))
 	message = strings.TrimSpace(message)
 
 	if width <= 0 {
@@ -212,14 +209,22 @@ func renderProgressLine(width int, message string, percent float64) string {
 	if message == "" {
 		return fmt.Sprintf("%s %s", bar, percentLabel)
 	}
-	return fmt.Sprintf("%s %s %s", bar, percentLabel, message)
+	return fmt.Sprintf("%s %s %s", bar, percentLabel, PromptStyle.Render(message))
 }
 
 func renderProgressBar(width int, percent float64) string {
 	percent = clampProgress(percent)
 	filled := int(percent * float64(width))
 	empty := width - filled
-	return strings.Repeat("#", filled) + strings.Repeat(" ", empty)
+	return SuccessStyle.Render(strings.Repeat("#", filled)) + MutedStyle.Render(strings.Repeat(".", empty))
+}
+
+func renderStatusLine(label string, style lipgloss.Style, message string) string {
+	message = strings.TrimSpace(message)
+	if message == "" {
+		return style.Render(label)
+	}
+	return fmt.Sprintf("%s %s", style.Render(label), message)
 }
 
 func clampProgress(percent float64) float64 {

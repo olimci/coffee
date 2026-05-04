@@ -129,8 +129,27 @@ func normalizeKey(key string) string {
 		return ""
 	}
 
+	if strings.Contains(key, "+") {
+		parts := strings.Split(key, "+")
+		for i := range parts {
+			parts[i] = strings.ToLower(strings.TrimSpace(parts[i]))
+		}
+
+		if len(parts) == 2 && parts[0] == "shift" {
+			runes := []rune(parts[1])
+			if len(runes) == 1 && unicode.IsLetter(runes[0]) {
+				return strings.ToUpper(parts[1])
+			}
+		}
+
+		return strings.Join(parts, "+")
+	}
+
 	runes := []rune(key)
 	if len(runes) == 1 && unicode.IsLetter(runes[0]) {
+		if unicode.IsUpper(runes[0]) {
+			return strings.ToUpper(key)
+		}
 		return strings.ToLower(key)
 	}
 
@@ -148,7 +167,46 @@ func renderKeybind(binding Keybind) string {
 		return description
 	}
 
-	return fmt.Sprintf("%s %s", InverseStyle.Render(" "+binding.Key+" "), description)
+	return fmt.Sprintf("%s %s", KeycapStyle.Render(" "+displayKey(binding.Key)+" "), description)
+}
+
+func displayKey(key string) string {
+	key = strings.TrimSpace(key)
+	if key == "" {
+		return ""
+	}
+
+	if strings.Contains(key, "+") {
+		parts := strings.Split(key, "+")
+		for i := range parts {
+			parts[i] = displayKeyPart(parts[i])
+		}
+		return strings.Join(parts, "+")
+	}
+
+	runes := []rune(key)
+	if len(runes) == 1 && unicode.IsLetter(runes[0]) {
+		if unicode.IsUpper(runes[0]) {
+			return "Shift+" + strings.ToUpper(key)
+		}
+		return strings.ToUpper(key)
+	}
+
+	return key
+}
+
+func displayKeyPart(part string) string {
+	part = strings.TrimSpace(part)
+	if part == "" {
+		return ""
+	}
+
+	runes := []rune(part)
+	if len(runes) == 1 && unicode.IsLetter(runes[0]) {
+		return strings.ToUpper(part)
+	}
+
+	return strings.ToUpper(part[:1]) + strings.ToLower(part[1:])
 }
 
 var _ Submodel = (*Keybinds)(nil)

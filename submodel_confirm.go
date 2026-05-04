@@ -66,16 +66,16 @@ func (m *Confirm) Update(msg tea.Msg) (Submodel, tea.Cmd, string) {
 
 func (m *Confirm) View() string {
 	if m.confirm {
-		return fmt.Sprintf("%s Yn", m.prompt)
+		return fmt.Sprintf("%s %s %s", PromptStyle.Render(m.prompt), InverseSuccessStyle.Render(" yes "), MutedStyle.Render("no"))
 	}
-	return fmt.Sprintf("%s yN", m.prompt)
+	return fmt.Sprintf("%s %s %s", PromptStyle.Render(m.prompt), MutedStyle.Render("yes"), InverseErrorStyle.Render(" no "))
 }
 
 func (m *Confirm) final() string {
 	if m.confirm {
-		return fmt.Sprintf("%s %s", m.prompt, SuccessStyle.Render("YES"))
+		return fmt.Sprintf("%s %s", PromptStyle.Render(m.prompt), SuccessStyle.Render("yes"))
 	}
-	return fmt.Sprintf("%s %s", m.prompt, ErrorStyle.Render("NO"))
+	return fmt.Sprintf("%s %s", PromptStyle.Render(m.prompt), ErrorStyle.Render("no"))
 }
 
 var _ Submodel = (*Confirm)(nil)

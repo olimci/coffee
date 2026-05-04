@@ -23,6 +23,15 @@ type msgWindowTitle struct {
 	title string
 }
 
+type msgBannerSet struct {
+	banner *Banner
+	text   string
+}
+
+type msgBannerClear struct {
+	banner *Banner
+}
+
 type MsgFocusGained struct{}
 
 type MsgFocusLost struct{}

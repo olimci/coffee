@@ -29,13 +29,21 @@ func main() {
 	err := coffee.Do(func(ctx context.Context, c *coffee.Coffee) error {
 		app := &demoApp{}
 
+		banner, err := c.Banner(strings.Join([]string{
+			"  shizuka / coffee  ",
+			"  body-less dev surface  ",
+		}, "\n"))
+		if err != nil {
+			return err
+		}
+		defer func() { _ = banner.Clear() }()
+
 		_ = c.SetWindowTitle("coffee test-app")
 		_ = c.Log("test-app: dev shell demo")
-		_ = c.Log("Body-less version of shizuka's dev surface.")
 		_ = c.Log("Use the footer keys to trigger input, confirm, choice, loading, logs, and clearing.")
 
 		return app.run(ctx, c)
-	}, coffee.WithContext(ctx))
+	}, coffee.WithContext(ctx), coffee.WithAltScreen())
 	if err == nil {
 		return
 	}

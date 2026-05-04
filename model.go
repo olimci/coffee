@@ -54,10 +54,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		entry := &submodelEntry{submodel: msg.submodel}
 		m.submodels[entry] = struct{}{}
 		m.appendSubmodel(msg.section, entry)
+		initCmd := m.initSubmodel(entry)
 		if !submodelFocusable(entry.submodel) {
-			return m, entry.submodel.Init()
+			return m, initCmd
 		}
-		return m, tea.Batch(entry.submodel.Init(), m.pushFocus(entry, msg.behind))
+		return m, tea.Batch(initCmd, m.pushFocus(entry, msg.behind))
 
 	case msgWindowTitle:
 		return m, tea.SetWindowTitle(msg.title)
@@ -171,6 +172,19 @@ func (m *model) notifyFocusChange(old, new *submodelEntry) tea.Cmd {
 	}
 	if new != nil {
 		if cmd := m.updateSubmodel(new, MsgFocusGained{}); cmd != nil {
+			cmds = append(cmds, cmd)
+		}
+	}
+	return tea.Batch(cmds...)
+}
+
+func (m *model) initSubmodel(entry *submodelEntry) tea.Cmd {
+	cmds := make([]tea.Cmd, 0, 2)
+	if cmd := entry.submodel.Init(); cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+	if m.width > 0 || m.height > 0 {
+		if cmd := m.updateSubmodel(entry, tea.WindowSizeMsg{Width: m.width, Height: m.height}); cmd != nil {
 			cmds = append(cmds, cmd)
 		}
 	}

@@ -10,7 +10,7 @@ import (
 
 func NewInput() *Input {
 	in := textinput.New()
-	in.Prompt = ": "
+	in.Prompt = PromptStyle.Render("~> ")
 	in.PlaceholderStyle = MutedStyle
 	in.Cursor.Style = InverseStyle
 
@@ -109,7 +109,7 @@ func (m *Input) final() string {
 		return ""
 	}
 
-	return fmt.Sprintf("%s%s", m.input.Prompt, m.input.Value())
+	return fmt.Sprintf("%s%s", PromptStyle.Render("~> "), m.input.Value())
 }
 
 var _ Submodel = (*Input)(nil)

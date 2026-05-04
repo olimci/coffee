@@ -86,13 +86,15 @@ func (m *Select) Update(msg tea.Msg) (Submodel, tea.Cmd, string) {
 func (m *Select) View() string {
 	lines := make([]string, 0, len(m.options)+1)
 	if m.prompt != "" {
-		lines = append(lines, m.prompt)
+		lines = append(lines, PromptStyle.Render(m.prompt))
 	}
 
 	for i, option := range m.options {
-		prefix := "  "
+		prefix := MutedStyle.Render("· ")
 		if i == m.index {
-			prefix = "> "
+			prefix = AccentStyle.Render("› ")
+			lines = append(lines, prefix+InverseStyle.Render(" "+option+" "))
+			continue
 		}
 		lines = append(lines, prefix+option)
 	}
@@ -104,7 +106,7 @@ func (m *Select) final(selected string) string {
 	if m.prompt == "" {
 		return selected
 	}
-	return fmt.Sprintf("%s %s", m.prompt, selected)
+	return fmt.Sprintf("%s %s", PromptStyle.Render(m.prompt), AccentStyle.Render(selected))
 }
 
 var _ Submodel = (*Select)(nil)
