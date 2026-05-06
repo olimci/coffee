@@ -145,6 +145,34 @@ func (c *Coffee) AwaitConfirm(prompt string, opts ...SubmodelOption) (bool, erro
 	return c.Confirm(prompt, true, opts...)
 }
 
+func (c *Coffee) ActionPromise(prompt string, actions []Action, defaultValue string, opts ...SubmodelOption) (Promise[string], error) {
+	if len(actions) == 0 {
+		return Promise[string]{}, fmt.Errorf("actions cannot be empty")
+	}
+	actionModel, err := NewAction(prompt, slices.Clone(actions), defaultValue)
+	if err != nil {
+		return Promise[string]{}, err
+	}
+
+	p, resolve := promise.New[string]()
+	actionModel = actionModel.withResolve(resolve)
+	if err := c.AddSubmodel(actionModel, opts...); err != nil {
+		var zero Promise[string]
+		return zero, err
+	}
+	return p, nil
+}
+
+func (c *Coffee) Action(prompt string, actions []Action, defaultValue string, opts ...SubmodelOption) (string, error) {
+	p, err := c.ActionPromise(prompt, actions, defaultValue, opts...)
+	if err != nil {
+		return "", err
+	}
+
+	value, err := p.Await(c.ctx)
+	return value, err
+}
+
 func (c *Coffee) Select(prompt string, options []string) (Promise[string], error) {
 	if len(options) == 0 {
 		return Promise[string]{}, fmt.Errorf("select options cannot be empty")
